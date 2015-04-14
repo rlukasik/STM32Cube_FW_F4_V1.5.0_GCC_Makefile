@@ -1,8 +1,8 @@
 export
 
 DEVICE_FAMILY = STM32F4xx
-DEVICE_TYPE = STM32F407xx
-STARTUP_FILE = stm32f407xx
+DEVICE_TYPE = STM32F401xx
+STARTUP_FILE = stm32f401xe
 SYSTEM_FILE = stm32f4xx
 
 CMSIS = Drivers/CMSIS
@@ -13,7 +13,7 @@ CPU = -mthumb -mcpu=cortex-m4 -mfloat-abi=softfp -mfpu=fpv4-sp-d16
 SYSTEM = arm-none-eabi
 
 #LDSCRIPT = STM32F407ZG_FLASH.ld
-LDSCRIPT = "Projects/TrueSTUDIO/e407-test1 Configuration/STM32F407ZG_FLASH.ld"
+LDSCRIPT = "Projects/STM32F401RE-Nucleo/Templates/TrueSTUDIO/STM32F4xx-Nucleo/STM32F401CE_FLASH.ld"
 
 SRCDIR := Src/
 INCDIR := Inc/
@@ -34,19 +34,28 @@ LIBINC += -IMiddlewares/Third_Party/FatFs/src/drivers
 LIBINC += -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 LIBINC += -IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc
 LIBINC += -IMiddlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
+LIBINC += -IMiddlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Inc
+LIBINC += -IMiddlewares/ST/STM32_USB_Device_Library/Class/HID/Inc
+LIBINC += -IMiddlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc
 LIBINC += -IMiddlewares/ST/STM32_USB_Host_Library/Core/Inc
 LIBINC += -IMiddlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc
+LIBINC += -IMiddlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc
+LIBINC += -IMiddlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
+LIBINC += -IMiddlewares/ST/STM32_USB_Host_Library/Class/HID/Inc
+LIBINC += -IMiddlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc
 LIBINC += -IMiddlewares/Third_Party/FatFs/src
 LIBINC += -IMiddlewares/Third_Party/FreeRTOS/Source/include
 LIBINC += -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
-LIBINC += -IMiddlewares/Third_Party/LwIP/system/arch
-LIBINC += -IMiddlewares/Third_Party/LwIP/system/OS
-LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/ipv4/lwip
-LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/lwip
-LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/netif
-LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/posix
-LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/posix/sys
-LIBINC += -IMiddlewares/Third_Party/LwIP/src/netif/ppp
+#LIBINC += -IMiddlewares/Third_Party/LwIP/system/arch
+#LIBINC += -IMiddlewares/Third_Party/LwIP/system/OS
+#LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/ipv4/lwip
+#LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/ipv6/lwip
+#LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/lwip
+#LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/netif
+#LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/posix
+#LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/posix/sys
+#LIBINC += -IMiddlewares/Third_Party/LwIP/src/netif/ppp
+#LIBINC += -IMiddlewares/Third_Party/LwIP/test/unit
 LIBINC += -IDrivers/CMSIS/Include
 LIBINC += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include
 
@@ -54,7 +63,7 @@ LIBINC += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include
 LIBS := ./$(LIBDIR)/STM32F4xx_HAL_Driver/libstm32fw.a
 LIBS += ./$(MDLDIR)/Third_Party/FatFs/fatfs.a
 LIBS += ./$(MDLDIR)/Third_Party/FreeRTOS/freertos.a
-LIBS += ./$(MDLDIR)/Third_Party/LwIP/lwip.a
+#LIBS += ./$(MDLDIR)/Third_Party/LwIP/lwip.a
 LIBS += ./$(MDLDIR)/ST/STM32_USB_Device_Library/libstm32usbdev.a
 LIBS += ./$(MDLDIR)/ST/STM32_USB_Host_Library/libstm32usbhost.a
 	   
@@ -69,9 +78,9 @@ OBJCOPY = $(SYSTEM)-objcopy
 OBJDUMP	= $(SYSTEM)-objdump
 GDB		= $(SYSTEM)-gdb
 SIZE	= $(SYSTEM)-size
-OCD	= sudo ~/openocd-git/openocd/src/openocd \
+OCD	= openocd \
 		-s ~/openocd-git/openocd/tcl/ \
-		-f interface/stlink-v2.cfg \
+		-f interface/stlink-v2-1.cfg \
 		-f target/stm32f4x_stlink.cfg
 
 
