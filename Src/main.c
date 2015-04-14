@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
-  * @file    GPIO/GPIO_IOToggle/Src/main.c 
+  * @file    UART/UART_Printf/Src/main.c 
   * @author  MCD Application Team
   * @version V1.2.1
   * @date    13-March-2015
-  * @brief   This example describes how to configure and use GPIOs through 
-  *          the STM32F4xx HAL API.
+  * @brief   This example shows how to retarget the C library printf function 
+  *          to the UART.
   ******************************************************************************
   * @attention
   *
@@ -43,7 +43,7 @@
   * @{
   */
 
-/** @addtogroup GPIO_IOToggle
+/** @addtogroup UART_Printf
   * @{
   */ 
 
@@ -51,9 +51,17 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-static GPIO_InitTypeDef  GPIO_InitStruct;
+/* UART handler declaration */
+UART_HandleTypeDef UartHandle;
 
 /* Private function prototypes -----------------------------------------------*/
+#ifdef __GNUC__
+  /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+     set to 'Yes') calls __io_putchar() */
+  #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+  #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 
@@ -66,11 +74,6 @@ static void Error_Handler(void);
   */
 int main(void)
 {
- /* This sample code shows how to use STM32F4xx GPIO HAL API to toggle PA05 IOs 
-    connected to LED2 on STM32F4xx-Nucleo board  
-    in an infinite loop.
-    To proceed, 3 steps are required: */
-
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
        - Configure the Systick to generate an interrupt each 1 msec
@@ -81,26 +84,56 @@ int main(void)
   
   /* Configure the system clock to 84 MHz */
   SystemClock_Config();
+   
+  /*##-1- Configure the UART peripheral ######################################*/
+  /* Put the USART peripheral in the Asynchronous mode (UART Mode) */
+  /* UART1 configured as follow:
+      - Word Length = 8 Bits
+      - Stop Bit = One Stop bit
+      - Parity = ODD parity
+      - BaudRate = 9600 baud
+      - Hardware flow control disabled (RTS and CTS signals) */
+  UartHandle.Instance          = USARTx;
   
-  /* -1- Enable GPIOA Clock (to be able to program the configuration registers) */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+  UartHandle.Init.BaudRate     = 9600;
+  UartHandle.Init.WordLength   = UART_WORDLENGTH_8B;
+  UartHandle.Init.StopBits     = UART_STOPBITS_1;
+  UartHandle.Init.Parity       = UART_PARITY_NONE;
+  UartHandle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+  UartHandle.Init.Mode         = UART_MODE_TX_RX;
+  UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+    
+  if(HAL_UART_Init(&UartHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler(); 
+  }
   
-  /* -2- Configure PA05 IO in output push-pull mode to
-         drive external LED */
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct); 
+  BSP_LED_Init(LED2);
+  /* Turn LED2 on */
+  BSP_LED_On(LED2);
 
-  /* -3- Toggle PA05 IO in an infinite loop */  
+  /* Output a message on Hyperterminal using printf function */
+  printf("\n\r UART Printf Example: retarget the C library printf function to the UART\n\r");
+
+  /* Infinite loop */ 
   while (1)
   {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    
-    /* Insert delay 100 ms */
-    HAL_Delay(100);
   }
+}
+
+/**
+  * @brief  Retargets the C library printf function to the USART.
+  * @param  None
+  * @retval None
+  */
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
+  HAL_UART_Transmit(&UartHandle, (uint8_t *)&ch, 1, 0xFFFF); 
+
+  return ch;
 }
 
 /**
@@ -150,7 +183,7 @@ static void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  
+ 
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
   RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
@@ -171,6 +204,8 @@ static void SystemClock_Config(void)
   */
 static void Error_Handler(void)
 {
+  /* Turn LED2 on */
+  BSP_LED_On(LED2);
   while(1)
   {
   }
@@ -198,10 +233,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-  */
+  */ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

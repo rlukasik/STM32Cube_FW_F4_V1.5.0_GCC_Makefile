@@ -4,6 +4,11 @@ DEVICE_FAMILY = STM32F4xx
 DEVICE_TYPE = STM32F401xx
 STARTUP_FILE = stm32f401xe
 SYSTEM_FILE = stm32f4xx
+TARGET_PLATFORM = STM32F4xx-Nucleo
+TARGET_FILE = stm32f4xx_nucleo
+
+BSP = Drivers/BSP
+BSP_SUP = $(BSP)/$(TARGET_PLATFORM)
 
 CMSIS = Drivers/CMSIS
 CMSIS_DEVSUP = $(CMSIS)/Device/ST/$(DEVICE_FAMILY)/
@@ -14,6 +19,7 @@ SYSTEM = arm-none-eabi
 
 #LDSCRIPT = STM32F407ZG_FLASH.ld
 LDSCRIPT = "Projects/STM32F401RE-Nucleo/Templates/TrueSTUDIO/STM32F4xx-Nucleo/STM32F401CE_FLASH.ld"
+#LDSCRIPT = "Projects/STM32F401RE-Nucleo/Examples/UART/UART_Printf/TrueSTUDIO/STM32F4xx-Nucleo"
 
 SRCDIR := Src/
 INCDIR := Inc/
@@ -30,6 +36,7 @@ LIBINC += -IMiddlewares/Third_Party/LwIP/system
 LIBINC += -IMiddlewares/Third_Party/LwIP/src/include
 LIBINC += -IMiddlewares/Third_Party/LwIP/src/include/ipv4
 LIBINC += -IDrivers/STM32F4xx_HAL_Driver/Inc
+LIBINC += -IDrivers/BSP/$(TARGET_PLATFORM)
 LIBINC += -IMiddlewares/Third_Party/FatFs/src/drivers
 LIBINC += -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 LIBINC += -IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc
@@ -69,6 +76,10 @@ LIBS += ./$(MDLDIR)/ST/STM32_USB_Host_Library/libstm32usbhost.a
 	   
 	   
 LIBS += -lm
+#LIBS += -lc
+#LIBS += -lgcc
+#LIBS += -specs=nosys.specs
+
 CC      = $(SYSTEM)-gcc
 CCDEP   = $(SYSTEM)-gcc
 LD      = $(SYSTEM)-gcc
@@ -87,7 +98,7 @@ OCD	= openocd \
   
 # INCLUDES = -I$(SRCDIR) $(LIBINC)
 INCLUDES = $(LIBINC)
-CFLAGS  = $(CPU) $(CMSIS_OPT) $(OTHER_OPT) -Wall -fno-common -fno-strict-aliasing -O2 $(INCLUDES) -g -Wfatal-errors -g 
+CFLAGS  = $(CPU) $(CMSIS_OPT) $(OTHER_OPT) -Wall -fno-common -fno-strict-aliasing -O2 $(INCLUDES) -g -Wfatal-errors -g
 ASFLAGS = $(CFLAGS) -x assembler-with-cpp
 LDFLAGS = -Wl,--gc-sections,-Map=$*.map,-cref -T $(LDSCRIPT) $(CPU)
 ARFLAGS = cr
@@ -96,6 +107,7 @@ OBJDUMPFLAGS = -S
 
 STARTUP_OBJ = $(CMSIS_DEVSUP)/Source/Templates/gcc/startup_$(STARTUP_FILE).o
 SYSTEM_OBJ = $(CMSIS_DEVSUP)/Source/Templates/system_$(SYSTEM_FILE).o
+TARGET_OBJ = $(BSP_SUP)/$(TARGET_FILE).o
 
 BIN = main.bin
 
@@ -103,7 +115,8 @@ OBJS = $(sort \
  $(patsubst %.c,%.o,$(wildcard Src/*.c)) \
  $(patsubst %.s,%.o,$(wildcard Src/*.s)) \
  $(STARTUP_OBJ) \
- $(SYSTEM_OBJ))
+ $(SYSTEM_OBJ) \
+ $(TARGET_OBJ))
 
 all: $(BIN)
 

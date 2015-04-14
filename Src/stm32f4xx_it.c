@@ -1,16 +1,16 @@
 /**
   ******************************************************************************
-  * @file    Templates/Src/stm32f4xx_it.c 
+  * @file    UART/UART_Printf/Src/stm32f4xx_it.c 
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    26-December-2014
+  * @version V1.2.1
+  * @date    13-March-2015
   * @brief   Main Interrupt Service Routines.
   *          This file provides template for all exceptions handler and 
   *          peripherals interrupt service routine.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -39,13 +39,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f4xx_it.h"
-   
+#include "stm32f4xx_it.h"    
+
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
 
-/** @addtogroup Templates
+/** @addtogroup UART_Printf
   * @{
   */
 
@@ -155,7 +155,6 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-  HAL_IncTick();
 }
 
 /******************************************************************************/
@@ -164,7 +163,6 @@ void SysTick_Handler(void)
 /*  available peripheral interrupt handler's name please refer to the startup */
 /*  file (startup_stm32f4xx.s).                                               */
 /******************************************************************************/
-
 /**
   * @brief  This function handles PPP interrupt request.
   * @param  None

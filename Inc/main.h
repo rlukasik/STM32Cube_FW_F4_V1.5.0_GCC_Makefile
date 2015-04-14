@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * @file    Templates/Inc/main.h 
+  * @file    UART/UART_Printf/Inc/main.h 
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    26-December-2014
+  * @version V1.2.1
+  * @date    13-March-2015
   * @brief   Header for main.c module
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -34,16 +34,37 @@
   *
   ******************************************************************************
   */
-
+  
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
 #define __MAIN_H
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_nucleo.h"
+#include "stdio.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
+/* User can use this section to tailor USARTx/UARTx instance used and associated 
+   resources */
+/* Definition for USARTx clock resources */
+#define USARTx                           USART2
+#define USARTx_CLK_ENABLE()              __HAL_RCC_USART2_CLK_ENABLE();
+#define USARTx_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()
+#define USARTx_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE() 
+
+#define USARTx_FORCE_RESET()             __HAL_RCC_USART2_FORCE_RESET()
+#define USARTx_RELEASE_RESET()           __HAL_RCC_USART2_RELEASE_RESET()
+
+/* Definition for USARTx Pins */
+#define USARTx_TX_PIN                    GPIO_PIN_2
+#define USARTx_TX_GPIO_PORT              GPIOA  
+#define USARTx_TX_AF                     GPIO_AF7_USART2
+#define USARTx_RX_PIN                    GPIO_PIN_3
+#define USARTx_RX_GPIO_PORT              GPIOA 
+#define USARTx_RX_AF                     GPIO_AF7_USART2
+  
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
